@@ -4,7 +4,7 @@
 	
   angular.module('App')
   .component('mainDisplay', {
-	templateUrl: 'src/components/display-component.html',
+	templateUrl: 'src/components/display-component/display-component.html',
 	controller: MainDisplayController,
 	bindings: {
 		data: '<' // in routes: data=app.barData.  When using $ctrl.data in template or controller, refering to app.barData
