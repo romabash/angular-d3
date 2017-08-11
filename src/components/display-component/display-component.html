@@ -1,0 +1,12 @@
+<h2>Dynamic Bar Chart</h2>
+	<div>
+	  <ul>
+	    <li ng-repeat="bar in $ctrl.data">
+			<div class="input-group">
+				<span class="input-group-addon">{{bar.name}}</span>
+				<input type="text" class="form-control" placeholder="Enter" ng-model="bar.score"/>
+			</div>
+		</li>
+	  </ul>
+	</div>
+<div id="bars"></div>
