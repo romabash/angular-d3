@@ -3,17 +3,17 @@
   'use strict';
 
   angular.module('App')
-  .component('mainDisplay', {
-	templateUrl: 'src/components/display-component/display-component.html',
-	controller: MainDisplayController,
+  .component('barDisplay', {
+	templateUrl: 'src/components/bar-component/bar-component.html',
+	controller: BarDisplayController,
 	bindings: {
 		data: '<' // in routes: data=app.barData.  When using $ctrl.data in template or controller, refering to app.barData
 	}
   });
 
 //Component Controller - Display
-  MainDisplayController.$inject = ['d3Service', '$window', '$element'];
-  function MainDisplayController(d3Service, $window, $element){
+  BarDisplayController.$inject = ['d3Service', '$window', '$element'];
+  function BarDisplayController(d3Service, $window, $element){
 	var $ctrl = this;
 
 	d3Service.d3().then(function(d3) {
