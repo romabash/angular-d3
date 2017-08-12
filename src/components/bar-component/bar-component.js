@@ -42,7 +42,6 @@
 			// Use the schemeCategory10 scale function for multicolor support
 			var color = d3.scaleOrdinal(d3.schemeCategory10);
 
-      // set up xScale - based on highest score/the size of the window
 			var xScale = d3.scaleLinear()
 				.domain([0, d3.max($ctrl.data, function(d) { return d.score; }) ]) //max score
 				.range([0, width]);
@@ -75,10 +74,10 @@
 
     }); //Ends d3 promise
 
-	$ctrl.$doCheck = function(){
+    $ctrl.$doCheck = function(){
 
-	};
+    };
 
-  }
+  } // Ends Controller
 
 })();
