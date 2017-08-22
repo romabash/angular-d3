@@ -1,10 +1,11 @@
 <h1 class="header animated bounceInLeft"><span>Dynamic </span>Bar Chart</h1>
+<h3 class="info">Bars change on window resize or value change</h3>
 	<div>
 		<ul>
 			<li ng-repeat="bar in $ctrl.data">
-				<div class="input-group">
-					<span class="input-group-addon">{{bar.name}}</span>
-					<input type="text" class="form-control" placeholder="Enter" ng-model="bar.score"/>
+				<div class="values">
+					<label>{{bar.name}}</label>
+					<input type="text" placeholder="Enter" ng-model="bar.score"/>
 				</div>
 			</li>
 		</ul>
