@@ -14,12 +14,17 @@
 		//Set up UI states
 		$stateProvider
 
-		//Home page
-		.state('home', {
-			url: '/',
-			template:'<bar-display data="app.barData"></bar-display>',
-			controller: 'MainCtrl as app'
-		});
+			//Home page
+      .state('home', {
+				url: '/',
+				templateUrl:'src/home-template.html'
+	  	})
+	  	//Bar page
+    	.state('bar', {
+				url: '/bar',
+				template:'<bar-display data="app.barData"></bar-display>',
+				controller: 'MainCtrl as app'
+	  	});
 
 	}
 

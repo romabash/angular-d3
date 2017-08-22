@@ -1,12 +1,114 @@
+*{
+  box-sizing: border-box;
+}
 
 body{
-  font-family: 'Josefin Sans', sans-serif;
+  background: #92bde7;
+  color: #485e74;
+  line-height: 1.6;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-ul{
-  list-style-type: none;
+.container{
+  max-width: 800px; /* max size with auto margins on the sides */
+  margin-left: auto;
+  margin-right: auto;
+  padding: 1em;
 }
 
+.header{
+  text-align: center;
+}
+
+.header span{
+  color: #fff;
+}
+
+.wrapper{
+  box-shadow: 0 0 20px 0 rgba(72, 94, 116, 0.7);
+}
+
+.wrapper > *{ /* every element inside wrapper */
+  padding: 1em;
+}
+
+.app-info{
+  background: #c9e6ff;
+}
+
+.app-info h3, .app-info p{
+  text-align: center;
+  margin: 0 0 1rem 0;
+}
+
+.app-info p{
+  color: #042559;
+}
+
+.projects{
+  background: #f9feff;
+}
+
+.projects {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 20px;
+}
+
+.projects p{
+  margin: 0;
+}
+
+.projects h3{
+  grid-column: 1/3;
+  text-align: center;
+}
+
+.projects .full{
+  grid-column: 1/3;
+}
+
+.projects button{
+  width: 100%;
+  padding: 1em;
+  border: 1px solid #c9e6ff;
+}
+
+.projects button{
+  background: #c9e6ff;
+  border: 0;
+  text-transform: uppercase;
+}
+
+.projects button:hover, .projects button:focus{
+  cursor: pointer;
+  background: #042559;
+  color: #fff;
+  outline: 0;
+  transition: background-color 2s ease-out;
+}
+
+/* Large Screens from 700 to larger*/
+
+@media(min-width:700px){
+  .wrapper{
+    display: grid;
+    grid-template-columns: 2fr 3fr;
+  }
+
+  .wrapper > *{
+    padding: 2em;
+  }
+
+  .app-info h3, .app-info p, .header{ /* Not centered, moved to left */
+    text-align: left;
+  }
+
+  .projects h3{
+    grid-column: 1/3;
+    text-align: left;
+  }
+}
 
 
 /* Screen Size */
