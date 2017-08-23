@@ -24,6 +24,12 @@
 				url: '/bar',
 				template:'<bar-display data="app.barData"></bar-display>',
 				controller: 'MainCtrl as app'
+	  	})
+			//Tree page
+      .state('tree', {
+					url: '/tree',
+					template:'<tree-display json-data="app.jsonData" new-node="app.newNode" data="app.barData"></tree-display>',
+					controller: 'MainCtrl as app'
 	  	});
 
 	}

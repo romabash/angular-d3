@@ -1,0 +1,29 @@
+.active {
+  stroke: #000;
+  stroke-width: 2px;
+}
+
+.node .activated {
+  transform: scale(1.3);
+  opacity: 0.8;
+}
+
+.notactive {
+  stroke: #e84f20;
+}
+
+.node circle {
+  fill: #e84f20;
+  stroke: #e84f20;
+  stroke-width: 3px;
+}
+
+.node text {
+  font: 12px sans-serif;
+}
+
+.link {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 2px;
+}

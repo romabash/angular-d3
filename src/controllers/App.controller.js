@@ -19,6 +19,27 @@
       {name: "Bar 4", score: 100}
     ];
 
+    app.jsonData = {
+      "name": "Parent",
+      "children": [
+        {
+          "name": "Child 1",
+          "children": []
+        },
+        {
+          "name": "Child 2",
+          "children": []
+        }
+      ]
+    };
+
+    app.newNode = [
+      {
+        "name": "New Node",
+        "children": []
+      }
+    ];
+
   }
 
 })();

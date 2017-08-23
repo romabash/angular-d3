@@ -4,11 +4,11 @@
 
   angular.module('App')
   .component('barDisplay', {
-	templateUrl: 'src/components/bar-component/bar-component.html',
-	controller: BarDisplayController,
-	bindings: {
-		data: '<' // in routes: data=app.barData.  When using $ctrl.data in template or controller, refering to app.barData
-	}
+	  templateUrl: 'src/components/bar-component/bar-component.html',
+	  controller: BarDisplayController,
+	  bindings: {
+		  data: '<' // in routes: data=app.barData.  When using $ctrl.data in template or controller, refering to app.barData
+	  }
   });
 
 //Component Controller - Display
@@ -50,7 +50,7 @@
 	  		canvas.attr('height', height);
 
 	  		//create the rectangles for the bar chart
-	  		canvas.selectAll('rect')
+	  		var bars = canvas.selectAll('rect')
 	  		.data($ctrl.data).enter()
 	  			.append('rect')
 	  			.attr('height', barHeight)
@@ -75,8 +75,11 @@
     }); //Ends d3 promise
 
     $ctrl.$doCheck = function(){
-
     };
+
+    $ctrl.$onDestroy = function () {
+      $window.onresize = null;
+    }
 
   } // Ends Controller
 
