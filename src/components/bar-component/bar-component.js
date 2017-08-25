@@ -49,22 +49,35 @@
 	  		// set the height based on the calculations above
 	  		canvas.attr('height', height);
 
-	  		//create the rectangles for the bar chart
-	  		var bars = canvas.selectAll('rect')
-	  		.data($ctrl.data).enter()
-	  			.append('rect')
-	  			.attr('height', barHeight)
-	  			.attr('width', 140) //start from 140 and then transition
-	  			.attr('x', Math.round(margin/2))
-	  			.attr('y', function(d,i) {
-	  				return i * (barHeight + barPadding);
-	  			})
-	  			.attr('fill', function(d, i) { return color(i); })
-	  			.transition()
-	  			.duration(1000)
-	  			.attr('width', function(d) {
-	  				return xScale(d.score);
-	  			});
+	  		//Create the rectangles for the bar chart
+	  		var bars = canvas.selectAll('g')
+	  		  .data($ctrl.data)
+          .enter()
+          .append("g");
+
+	  		bars.append('rect')
+	  		  .attr('height', barHeight)
+	  		  .attr('width', 140) //start from 140 and then transition
+	  		  .attr('x', Math.round(margin/2))
+	  		  .attr('y', function(d,i) {
+	  		  	return i * (barHeight + barPadding);
+	  		  })
+	  		  .attr('fill', function(d, i) { return color(i); })
+	  		  .transition()
+	  		  .duration(1000)
+	  		  .attr('width', function(d) {
+	  		  	return xScale(d.score);
+	  		  });
+
+        bars.append("text")
+    			.text(function(d) { return d.name; })
+    			.attr("x", Math.round(margin/2))
+    			.attr("y", function(d,i) {
+	  		  	return i * (barHeight + barPadding) + 15;
+	  		  })
+    			.attr("font-family", "sans-serif")
+    			.attr("font-size", "14px")
+    			.attr("fill", "#fff");
 
       } //Ends render function
 
