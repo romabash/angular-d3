@@ -74,7 +74,7 @@
 			//Gets the root object of the JSON
 			let root = d3.hierarchy(jsonData, function(d) {
 				return d.children;
-			})
+			});
 
 			//Declare a Tree Layout and assign the size
 			let treemap = d3.tree().size([height, width]);
@@ -166,7 +166,7 @@
 
 		function dragged(d) {
 			d3.select(this)
-				.attr("transform", "translate(" + d3.event.x + "," + d3.event.y + ")");
+				.attr("transform", "translate(" + (d3.event.x-20) + "," + (d3.event.y-20) + ")");
 		}
 
 		function dragended(d) {
