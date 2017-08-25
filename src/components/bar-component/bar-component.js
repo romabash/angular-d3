@@ -58,7 +58,7 @@
 	  		bars.append('rect')
 	  		  .attr('height', barHeight)
 	  		  .attr('width', 140) //start from 140 and then transition
-	  		  .attr('x', Math.round(margin/2))
+	  		  .attr('x', 0)
 	  		  .attr('y', function(d,i) {
 	  		  	return i * (barHeight + barPadding);
 	  		  })
@@ -71,13 +71,14 @@
 
         bars.append("text")
     			.text(function(d) { return d.name; })
-    			.attr("x", Math.round(margin/2))
+    			.attr("x", 0)
     			.attr("y", function(d,i) {
 	  		  	return i * (barHeight + barPadding) + 15;
 	  		  })
     			.attr("font-family", "sans-serif")
     			.attr("font-size", "14px")
-    			.attr("fill", "#fff");
+    			.attr("fill", "#fff")
+          .attr("font-weight", "bold");
 
       } //Ends render function
 
