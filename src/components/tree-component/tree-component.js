@@ -20,9 +20,12 @@
 
 	  d3Service.d3().then(function(d3) {
 
+      d3.select("body").on('click', outsideClick);
+
 		  //Declare variables
 		  let activatedNode; //activated node (circle)
 		  let currentNode; //node to add to
+      let clickedNode; //node when clicked to remove
 		  let nodeToAdd; //node being added (dragging node) based on its data
 		  let tempPosition = { "x": 0, "y": 0};
 
@@ -106,7 +109,8 @@
 		  		.append("g")
 		  			.attr("class", "node")
 		  			.attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")";} )
-		  			.on("mouseover", getNodeInfo);
+		  			.on("mouseover", getNodeInfo)
+            .on('click', onClick);
 
 		  	// adds the circle to the node to see on canvas
 		  	node.append("circle")
@@ -157,6 +161,36 @@
 				//d.parent gets the most upstream parent
 			}
 		}
+
+    //onClick Function to add the X to remove the node
+    function onClick(d) {
+      d3.event.stopPropagation(); //Stop click on the body event
+      clickedNode = d;
+      //Check if another node is already clicked, remove X if yes
+      if( d3.selectAll(".clicked")._groups[0].length > 0 ){
+        canvas.selectAll(".clicked").remove();
+      }
+      //add X on click to remove the node
+      d3.select(this).append("g")
+        .attr("class", "clicked")
+          .append("text")
+          .text("X")
+          .style("font-size", "24px")
+          .attr("fill", "red")
+          .attr('cursor', 'pointer')
+          .attr("transform", "translate(" + 20 + "," + -20 + ")" )
+          .on("click", onRemove);
+    }
+
+    function outsideClick() {
+      canvas.selectAll(".clicked").remove();
+    }
+
+    function onRemove() {
+      console.log(clickedNode);
+      this.remove();
+    }
+
 
 		function dragstarted(d) {
 			tempPosition.x = d3.event.x;
