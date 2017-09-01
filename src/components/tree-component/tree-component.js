@@ -15,107 +15,110 @@
 //Component Controller - Display
   TreeDisplayController.$inject = ['d3Service', '$window', '$element', '$rootScope'];
   function TreeDisplayController(d3Service, $window, $element, $rootScope){
-	let $ctrl = this;
 
-	d3Service.d3().then(function(d3) {
+    let $ctrl = this;
 
-		//Declare variables
-		let activatedNode; //activated node (circle)
-		let currentNode; //node to add to
-		let nodeToAdd; //node being added (dragging node) based on its data
-		let tempPosition = { "x": 0, "y": 0};
+	  d3Service.d3().then(function(d3) {
 
-		//Set dimensions and margins of the diagram
-		let margin = {top: 20, right: 90, bottom: 30, left:90};
-		let width = 600 - margin.left - margin.right;
-		let height = 400 - margin.top - margin.bottom;
+		  //Declare variables
+		  let activatedNode; //activated node (circle)
+		  let currentNode; //node to add to
+		  let nodeToAdd; //node being added (dragging node) based on its data
+		  let tempPosition = { "x": 0, "y": 0};
 
-		//Declare canvas with dimension and Zoom
-		let canvas = d3.select("#tree").append("svg")
-		.style('width', '100%')
-		.attr("height", height + margin.top + margin.bottom)
-		.style("background-color", 'AliceBlue')
-		.style("border", "1px solid #b7c9e5")
-		.call(d3.zoom().on("zoom", function() { canvas.attr("transform", d3.event.transform); }))
-		.append("g")
-			.attr("transform", "translate(" + margin.left + "," + margin.top + ")" );
+		  //Set dimensions and margins of the diagram
+		  let margin = {top: 20, right: 90, bottom: 30, left:90};
+		  let width = 600 - margin.left - margin.right;
+		  let height = 400 - margin.top - margin.bottom;
 
-		// render function
-		$ctrl.render = function(jsonData){
+		  //Declare canvas with dimension and Zoom
+		  let canvas = d3.select("#tree").append("svg")
+		  .style('width', '100%')
+		  .attr("height", height + margin.top + margin.bottom)
+		  .style("background-color", 'AliceBlue')
+		  .style("border", "1px solid #b7c9e5")
+		  .call(d3.zoom().on("zoom", function() {
+         canvas.attr("transform", d3.event.transform);
+       }))
+		  .append("g")
+		  	.attr("transform", "translate(" + margin.left + "," + margin.top + ")" );
 
-			canvas.selectAll('*').remove();
+		  // render function
+		  $ctrl.render = function(jsonData){
 
-			//Create new node and group the circle and its text to grad together
-			let circle = canvas.selectAll("g")
-				.data($ctrl.newNode)
-				.enter()
-				.append("g")
-				.call(d3.drag()
-					.on("start", dragstarted)
-					.on("drag", dragged)
-					.on("end", dragended)
-				);
+		  	canvas.selectAll('*').remove();
 
-			circle.append("circle")
-				.attr("cx", 20)
-				.attr("cy", 20)
-				.attr("r", 17)
-				.style("fill", "#35bac4")
-				.attr('cursor', 'pointer');
+		  	//Create new node and group the circle and its text to grad together
+		  	let circle = canvas.selectAll("g")
+		  		.data($ctrl.newNode)
+		  		.enter()
+		  		.append("g")
+		  		.call(d3.drag()
+		  			.on("start", dragstarted)
+		  			.on("drag", dragged)
+		  			.on("end", dragended)
+		  		);
 
-			circle.append("text")
-				.text(function(d) { return d.name; })
-				.attr("x", 0)
-				.attr("y", 0)
-				.attr("font-family", "sans-serif")
-				.attr("font-size", "12px")
-				.attr("fill", "black");
+		  	circle.append("circle")
+		  		.attr("cx", 20)
+		  		.attr("cy", 20)
+		  		.attr("r", 17)
+		  		.style("fill", "#35bac4")
+		  		.attr('cursor', 'pointer');
 
-			//Gets the root object of the JSON
-			let root = d3.hierarchy(jsonData, function(d) {
-				return d.children;
-			});
+		  	circle.append("text")
+		  		.text(function(d) { return d.name; })
+		  		.attr("x", 0)
+		  		.attr("y", 0)
+		  		.attr("font-family", "sans-serif")
+		  		.attr("font-size", "12px")
+		  		.attr("fill", "black");
 
-			//Declare a Tree Layout and assign the size
-			let treemap = d3.tree().size([height, width]);
+		  	//Gets the root object of the JSON
+		  	let root = d3.hierarchy(jsonData, function(d) {
+		  		return d.children;
+		  	});
 
-			$ctrl.treeData = treemap(root); //Map the node data to the Tree Layout (Still just root Object)
-			let nodes = $ctrl.treeData.descendants(); //Array of separate objects from the tree-made treeData
-			let links = nodes.slice(1); //Array of separate objects MINUS the first Root Object
+		  	//Declare a Tree Layout and assign the size
+		  	let treemap = d3.tree().size([height, width]);
 
-			// Normalize for fixed-depth - Changes y for shorter paths
-			nodes.forEach(function(d){ d.y = d.depth * 180});
+		  	$ctrl.treeData = treemap(root); //Map the node data to the Tree Layout (Still just root Object)
+		  	let nodes = $ctrl.treeData.descendants(); //Array of separate objects from the tree-made treeData
+		  	let links = nodes.slice(1); //Array of separate objects MINUS the first Root Object
 
-			//Add Paths First to have circles drawn over the path lines
-			canvas.selectAll(".link")
-			.data(links)
-			.enter()
-			.append("path")
-				.attr("class", "link")
-				.attr("fill", "none")
-				.attr("stroke", "grey")
-				.attr("d", drawPath);
+		  	// Normalize for fixed-depth - Changes y for shorter paths
+		  	nodes.forEach(function(d){ d.y = d.depth * 180});
 
-			// adds each node as a group - from nodes
-			let node = canvas.selectAll(".node")
-				.data(nodes)
-				.enter()
-				.append("g")
-					.attr("class", "node")
-					.attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")";} )
-					.on("mouseover", getNodeInfo);
+		  	//Add Paths First to have circles drawn over the path lines
+		  	canvas.selectAll(".link")
+		  	.data(links)
+		  	.enter()
+		  	.append("path")
+		  		.attr("class", "link")
+		  		.attr("fill", "none")
+		  		.attr("stroke", "grey")
+		  		.attr("d", drawPath);
 
-			// adds the circle to the node to see on canvas
-			node.append("circle")
-				.attr("r", 17)
-				.attr('cursor', 'pointer')
-				.on("mouseover", activate)
-				.on("mouseout", deactivate);
+		  	// adds each node as a group - from nodes
+		  	let node = canvas.selectAll(".node")
+		  		.data(nodes)
+		  		.enter()
+		  		.append("g")
+		  			.attr("class", "node")
+		  			.attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")";} )
+		  			.on("mouseover", getNodeInfo);
 
-			// adds the text to the node
-			node.append("text")
-				.text(function(d) { return d.data.name; })
-				.attr("transform", "translate(" + -20 + "," + -25 + ")" );
+		  	// adds the circle to the node to see on canvas
+		  	node.append("circle")
+		  		.attr("r", 17)
+		  		.attr('cursor', 'pointer')
+		  		.on("mouseover", activate)
+		  		.on("mouseout", deactivate);
+
+		  	// adds the text to the node
+		  	node.append("text")
+		  		.text(function(d) { return d.data.name; })
+		  		.attr("transform", "translate(" + -20 + "," + -25 + ")" );
 
 		} //ends render function
 

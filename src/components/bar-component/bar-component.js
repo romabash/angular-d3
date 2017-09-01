@@ -14,19 +14,19 @@
 //Component Controller - Display
   BarDisplayController.$inject = ['d3Service', '$window', '$element'];
   function BarDisplayController(d3Service, $window, $element){
-	  var $ctrl = this;
+	  let $ctrl = this;
 
 	  d3Service.d3().then(function(d3) {
 
-	  	var margin = 20;
-	  	var barHeight = 20;
-	  	var barPadding = 5;
+	  	let margin = 20;
+	  	let barHeight = 20;
+	  	let barPadding = 5;
 
 	  	$window.onresize = function() {
 	  		$ctrl.render();
 	  	};
 
-	  	var canvas = d3.select('#bars')
+	  	let canvas = d3.select('#bars')
 	  		.append('svg')
 	  		.style('width', '100%');
 	  		//.style('border', '1px solid black');
@@ -36,13 +36,13 @@
 	  		canvas.selectAll('*').remove();
 
 	  		//set up width based on the size of the div
-	  		var width = d3.select("#bars").node().offsetWidth - margin;
+	  		let width = d3.select("#bars").node().offsetWidth - margin;
 	  		// calculate the height of canvas
-	  		var height = $ctrl.data.length * (barHeight + barPadding);
+	  		let height = $ctrl.data.length * (barHeight + barPadding);
 	  		// Use the schemeCategory10 scale function for multicolor support
-	  		var color = d3.scaleOrdinal(d3.schemeCategory10);
+	  		let color = d3.scaleOrdinal(d3.schemeCategory10);
 
-	  		var xScale = d3.scaleLinear()
+	  		let xScale = d3.scaleLinear()
 	  			.domain([0, d3.max($ctrl.data, function(d) { return d.score; }) ]) //max score
 	  			.range([0, width]);
 
@@ -50,7 +50,7 @@
 	  		canvas.attr('height', height);
 
 	  		//Create the rectangles for the bar chart
-	  		var bars = canvas.selectAll('g')
+	  		let bars = canvas.selectAll('g')
 	  		  .data($ctrl.data)
           .enter()
           .append("g");
