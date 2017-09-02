@@ -166,20 +166,23 @@
     function onClick(d) {
       d3.event.stopPropagation(); //Stop click on the body event
       clickedNode = d;
+
       //Check if another node is already clicked, remove X if yes
       if( d3.selectAll(".clicked")._groups[0].length > 0 ){
         canvas.selectAll(".clicked").remove();
       }
-      //add X on click to remove the node - add class clicked to the text X
-      d3.select(this).append("g")
-        .attr("class", "clicked")
-          .append("text")
-          .text("X")
-          .style("font-size", "24px")
-          .attr("fill", "red")
-          .attr('cursor', 'pointer')
-          .attr("transform", "translate(" + 20 + "," + -20 + ")" )
-          .on("click", onRemove);
+      //add X on click to remove the node only if it has a parent
+      if(clickedNode.parent){
+        d3.select(this).append("g")
+          .attr("class", "clicked")
+            .append("text")
+            .text("X")
+            .style("font-size", "24px")
+            .attr("fill", "red")
+            .attr('cursor', 'pointer')
+            .attr("transform", "translate(" + 20 + "," + -20 + ")" )
+            .on("click", onRemove);
+      }
     }
 
     //Function when clicked outside of the node to remove X
