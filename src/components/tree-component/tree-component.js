@@ -23,7 +23,7 @@
       d3.select("body").on('click', outsideClick);
 
 		  //Declare variables
-		  let activatedNode; //activated node (circle)
+		  let activatedNode; //activated new dragging node (circle)
 		  let currentNode; //node to add to
       let clickedNode; //node when clicked to remove
 		  let nodeToAdd; //node being added (dragging node) based on its data
@@ -170,7 +170,7 @@
       if( d3.selectAll(".clicked")._groups[0].length > 0 ){
         canvas.selectAll(".clicked").remove();
       }
-      //add X on click to remove the node
+      //add X on click to remove the node - add class clicked to the text X
       d3.select(this).append("g")
         .attr("class", "clicked")
           .append("text")
@@ -182,17 +182,29 @@
           .on("click", onRemove);
     }
 
+    //Function when clicked outside of the node to remove X
     function outsideClick() {
       canvas.selectAll(".clicked").remove();
     }
 
+    //Function to remove the node and its children from treeData
     function onRemove() {
-      console.log(clickedNode);
-      this.remove();
+      //compare clickedNode to its parent's children and remove the node from the parent
+      for(let i=0; i<clickedNode.parent.children.length; i++){
+        if (clickedNode === clickedNode.parent.children[i]){
+          clickedNode.parent.children.splice(i,1);
+          clickedNode.parent.data.children.splice(i,1)
+        }
+      }
+      $ctrl.render($ctrl.treeData.data) //pass in as a json
     }
 
 
 		function dragstarted(d) {
+      //remove X on any node if any
+      if( d3.selectAll(".clicked")._groups[0].length > 0 ){
+        canvas.selectAll(".clicked").remove();
+      }
 			tempPosition.x = d3.event.x;
 			tempPosition.y = d3.event.y;
 			//set the dragging new node as active (only applying class to the circle, not text)
