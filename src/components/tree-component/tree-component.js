@@ -46,12 +46,11 @@
 		  .append("g")
 		  	.attr("transform", "translate(" + margin.left + "," + margin.top + ")" );
 
-		  // render function
+		  //Main render function - takes json object as parameter for the tree
 		  $ctrl.render = function(jsonData){
-
 		  	canvas.selectAll('*').remove();
 
-		  	//Create new node and group the circle and its text to grad together
+		  	//Create new node and group the circle and its text to drag together
 		  	let circle = canvas.selectAll("g")
 		  		.data($ctrl.newNode)
 		  		.enter()
@@ -77,7 +76,7 @@
 		  		.attr("font-size", "12px")
 		  		.attr("fill", "black");
 
-		  	//Gets the root object of the JSON
+		  	//Gets the root object of the passed json object
 		  	let root = d3.hierarchy(jsonData, function(d) {
 		  		return d.children;
 		  	});
@@ -92,7 +91,7 @@
 		  	// Normalize for fixed-depth - Changes y for shorter paths
 		  	nodes.forEach(function(d){ d.y = d.depth * 180});
 
-		  	//Add Paths First to have circles drawn over the path lines
+		  	//Add Paths first to have circles drawn over the path lines
 		  	canvas.selectAll(".link")
 		  	.data(links)
 		  	.enter()
@@ -102,7 +101,7 @@
 		  		.attr("stroke", "grey")
 		  		.attr("d", drawPath);
 
-		  	// adds each node as a group - from nodes
+		  	//Add each node as a group - from nodes
 		  	let node = canvas.selectAll(".node")
 		  		.data(nodes)
 		  		.enter()
@@ -112,192 +111,192 @@
 		  			.on("mouseover", getNodeInfo)
             .on('click', onClick);
 
-		  	// adds the circle to the node to see on canvas
+		  	//Add the circle to the node to see on canvas
 		  	node.append("circle")
 		  		.attr("r", 17)
 		  		.attr('cursor', 'pointer')
 		  		.on("mouseover", activate)
 		  		.on("mouseout", deactivate);
 
-		  	// adds the text to the node
+		  	//Add the text to the node - name
 		  	node.append("text")
 		  		.text(function(d) { return d.data.name; })
 		  		.attr("transform", "translate(" + -20 + "," + -25 + ")" );
 
-		} //ends render function
+		  }//Ends render function
 
-		//Call render Function
-		$ctrl.render($ctrl.jsonData)
+		  //Call render Function with initial jsonData from Controller
+		  $ctrl.render($ctrl.jsonData)
 
-		//Activate Current Node of the Tree
-		function activate(d) {
-			//activate this node
-			d3.select(this).classed("activated", true);
-			//get the active dragging newNode
-			let dragingNewNode = d3.select(".active");
+      /* -------------- FUNCTIONS -------------- */
 
-			//if new node is being dragged
-			if(dragingNewNode._groups[0][0] != null){
-				let dragingNewNodePosition = dragingNewNode._groups[0][0].getBoundingClientRect();
-				let activatedNodePosition = d3.select(this)._groups[0][0].getBoundingClientRect();
-				//check if the circle is inside the element
-				let overlaping = overlap(dragingNewNodePosition, activatedNodePosition);
-				if(overlaping){
-					activatedNode = true; //used in the node to get the node data
-				}
-			}
-		}
+		  //Activate current node of the tree
+		  function activate(d) {
+		  	//Activate this node
+		  	d3.select(this).classed("activated", true);
+		  	//Get the active draggingNewNode - class added in dragstarted function
+		  	let dragingNewNode = d3.select(".active");
 
-		//De-activate Current Node of the Tree
-		function deactivate(d) {
-			d3.select(this).classed("activated", false);
-			activatedNode = false;
-		}
+		  	//If draggingNewNode is being dragged
+		  	if(dragingNewNode._groups[0][0] != null){
+		  		let dragingNewNodePosition = dragingNewNode._groups[0][0].getBoundingClientRect();
+		  		let activatedNodePosition = d3.select(this)._groups[0][0].getBoundingClientRect();
+		  		//Check if the draggingNewNode is inside the element
+		  		let overlaping = overlap(dragingNewNodePosition, activatedNodePosition);
+		  		if(overlaping){
+		  			activatedNode = true; //Used in mouseover event of the node to get the node data
+		  		}
+		  	}
+		  }//Ends activate function
 
-		function getNodeInfo(d) {
-			//get this node to push new node into it
-			if (activatedNode) {
-				currentNode = d;
-				//d.parent gets the most upstream parent
-			}
-		}
+		  //De-activate Current Node of the Tree
+		  function deactivate(d) {
+		  	d3.select(this).classed("activated", false);
+		  	activatedNode = false;
+		  }
 
-    //onClick Function to add the X to remove the node
-    function onClick(d) {
-      d3.event.stopPropagation(); //Stop click on the body event
-      clickedNode = d;
+      //Assign the node info to currentNode to push new node into it
+		  function getNodeInfo(d) {
+		  	if (activatedNode) {
+		  		currentNode = d; //Used in dragended function to push new node
+		  	}
+		  }
 
-      //Check if another node is already clicked, remove X if yes
-      if( d3.selectAll(".clicked")._groups[0].length > 0 ){
-        canvas.selectAll(".clicked").remove();
-      }
-      //add X on click to remove the node only if it has a parent
-      if(clickedNode.parent){
-        d3.select(this).append("g")
-          .attr("class", "clicked")
-            .append("text")
-            .text("X")
-            .style("font-size", "24px")
-            .attr("fill", "red")
-            .attr('cursor', 'pointer')
-            .attr("transform", "translate(" + 20 + "," + -20 + ")" )
-            .on("click", onRemove);
-      }
-    }
+      //onClick Function to add the X to remove the node
+      function onClick(d) {
+        d3.event.stopPropagation(); //Stop click on the body event
+        clickedNode = d;
 
-    //Function when clicked outside of the node to remove X
-    function outsideClick() {
-      canvas.selectAll(".clicked").remove();
-    }
-
-    //Function to remove the node and its children from treeData
-    function onRemove() {
-      //compare clickedNode to its parent's children and remove the node from the parent
-      for(let i=0; i<clickedNode.parent.children.length; i++){
-        if (clickedNode === clickedNode.parent.children[i]){
-          clickedNode.parent.children.splice(i,1);
-          clickedNode.parent.data.children.splice(i,1)
+        //Check if another node is already clicked, remove X if yes
+        if( d3.selectAll(".clicked")._groups[0].length > 0 ){
+          canvas.selectAll(".clicked").remove();
         }
-      }
-      $ctrl.render($ctrl.treeData.data) //pass in as a json
-    }
+        //Add X on click to remove the node only if it has a parent - not for root node
+        if(clickedNode.parent){
+          d3.select(this).append("g")
+            .attr("class", "clicked")
+              .append("text")
+              .text("X")
+              .style("font-size", "24px")
+              .attr("fill", "red")
+              .attr('cursor', 'pointer')
+              .attr("transform", "translate(" + 20 + "," + -20 + ")" )
+              .on("click", onRemove);
+        }
+      }//Ends onClick function
 
-
-		function dragstarted(d) {
-      //remove X on any node if any
-      if( d3.selectAll(".clicked")._groups[0].length > 0 ){
+      //Function when clicked outside of the node to remove X
+      function outsideClick() {
         canvas.selectAll(".clicked").remove();
       }
-			tempPosition.x = d3.event.x;
-			tempPosition.y = d3.event.y;
-			//set the dragging new node as active (only applying class to the circle, not text)
-			d3.select(this).select("circle").classed("active", true);
-			//Create a copy of the data of the node
-			nodeToAdd = JSON.parse(JSON.stringify(d));
-		}
 
-		function dragged(d) {
-			d3.select(this)
-				.attr("transform", "translate(" + (d3.event.x-20) + "," + (d3.event.y-20) + ")");
-		}
+      //Function to remove the node and its children from treeData
+      function onRemove() {
+        //Compare clickedNode to its parent's children and remove the node from the parent
+        for(let i=0; i<clickedNode.parent.children.length; i++){
+          if (clickedNode === clickedNode.parent.children[i]){
+            clickedNode.parent.children.splice(i,1);
+            clickedNode.parent.data.children.splice(i,1)
+          }
+        }
+        $ctrl.render($ctrl.treeData.data) //pass in as a json
+      }
 
-		function dragended(d) {
-			//get the activated node circle
-			let activatedNode = d3.select(".activated");
-			//get this dragging node circle
-			let draging_new_node = d3.select(this);
 
-			//if node is activated
-			if(activatedNode._groups[0][0] != null){
+		  function dragstarted(d) {
+        //Remove X from any node if any
+        if( d3.selectAll(".clicked")._groups[0].length > 0 ){
+          canvas.selectAll(".clicked").remove();
+        }
 
-				let draging_new_node_position = draging_new_node._groups[0][0].getBoundingClientRect();
-				let activatedNode_position = activatedNode._groups[0][0].getBoundingClientRect();
-				//check if the circle is inside the element
-				let overlaping = overlap(draging_new_node_position, activatedNode_position);
-				//if inside change color to blue
-				if(overlaping && currentNode){
+		  	tempPosition.x = d3.event.x;
+		  	tempPosition.y = d3.event.y;
+		  	//Set the dragging new node as active (only applying class to the circle, not text)
+		  	d3.select(this).select("circle").classed("active", true);
+		  	//Create a copy of the data of the node
+		  	nodeToAdd = JSON.parse(JSON.stringify(d));
+		  }
 
-					//add children if empty node
-					if (!currentNode.children){
-						currentNode.children = [];
-						currentNode.data.children = [];
-					}
+		  function dragged(d) {
+		  	d3.select(this)
+		  		.attr("transform", "translate(" + (d3.event.x-20) + "," + (d3.event.y-20) + ")");
+		  }
 
-					currentNode.children.push(nodeToAdd);
-					currentNode.data.children.push(nodeToAdd);
-				}
-				//return back if appending node
-				d3.select(this).classed("active", false);
-				d3.select(this)
-				.attr("transform", "translate(" + tempPosition.x + "," + tempPosition.y + ")");
-			}
-			else {
-				//return back if didn't append node
-				d3.select(this).classed("active", false);
-				d3.select(this)
-				.attr("transform", "translate(" + tempPosition.x + "," + tempPosition.y + ")");
-			}
+		  function dragended(d) {
+		  	//Get the activated node circle
+		  	let activatedNode = d3.select(".activated");
+		  	//Get this dragging node circle
+		  	let dragingNewNode = d3.select(this);
 
-			$ctrl.render($ctrl.treeData.data) //pass in as a json
+		  	//If node is activated
+		  	if(activatedNode._groups[0][0] != null){
+		  		let dragingNewNodePosition = dragingNewNode._groups[0][0].getBoundingClientRect();
+		  		let activatedNodePosition = activatedNode._groups[0][0].getBoundingClientRect();
+		  		//Check if the circle is inside the element
+		  		let overlaping = overlap(dragingNewNodePosition, activatedNodePosition);
 
-		} //ends dragended function
+		  		if(overlaping && currentNode){
+		  			//Add children array if empty node doesn't have children
+		  			if (!currentNode.children){
+		  				currentNode.children = [];
+		  				currentNode.data.children = [];
+		  			}
 
-		//Returns true if elements overlap
-		function overlap(elem1, elem2) {
-			return !(elem1.right < elem2.left ||
-				elem1.left > elem2.right ||
-				elem1.bottom < elem2.top ||
-				elem1.top > elem2.bottom)
-		}
+		  			currentNode.children.push(nodeToAdd);
+		  			currentNode.data.children.push(nodeToAdd);
+		  		}
+		  		//Return back and set draggingNewNode to no longer active
+		  		d3.select(this).classed("active", false);
+		  		d3.select(this)
+		  		.attr("transform", "translate(" + tempPosition.x + "," + tempPosition.y + ")");
+		  	}
+		  	else {
+		  		//Return back if didn't append node
+		  		d3.select(this).classed("active", false);
+		  		d3.select(this)
+		  		.attr("transform", "translate(" + tempPosition.x + "," + tempPosition.y + ")");
+		  	}
 
-		//Function to draw the paths
-		function drawPath(d) {
-			return "M" + d.y + "," + d.x
-			+ "C" + (d.y + d.parent.y) / 2 + "," + d.x
-			+ " " + (d.y + d.parent.y) / 2 + "," + d.parent.x
-			+ " " + d.parent.y + "," + d.parent.x;
-		};
+		  	$ctrl.render($ctrl.treeData.data) //pass in as a json
 
-		//Function to count the most children to readjust the tree height
-		function childrenCount(node, count){
-			if(node.children){
-				if (count < node.children.length){
-					$ctrl.count = node.children.length;
-				}
-				//go through all its children
-				for(let i = 0; i < node.children.length; i++){
-					//if the current child in the for loop has children of its own
-					//call recurse again on it to decend the whole tree
-					if (node.children[i].children){
-						childrenCount(node.children[i], $ctrl.count);
-					}
-				}
-			}
-			return $ctrl.count;
-		}
+		  }//Ends dragended function
 
-	}); //Ends d3 promise
+		  //Returns true if elements overlap
+		  function overlap(elem1, elem2) {
+		  	return !(elem1.right < elem2.left ||
+		  		elem1.left > elem2.right ||
+		  		elem1.bottom < elem2.top ||
+		  		elem1.top > elem2.bottom)
+		  }
 
-  } //ends controller function
+		  //Function to draw the paths
+		  function drawPath(d) {
+		  	return "M" + d.y + "," + d.x
+		  	+ "C" + (d.y + d.parent.y) / 2 + "," + d.x
+		  	+ " " + (d.y + d.parent.y) / 2 + "," + d.parent.x
+		  	+ " " + d.parent.y + "," + d.parent.x;
+		  };
+
+		  //Function to count the most children to readjust the tree height
+		  function childrenCount(node, count){
+		  	if(node.children){
+		  		if (count < node.children.length){
+		  			$ctrl.count = node.children.length;
+		  		}
+		  		//go through all its children
+		  		for(let i = 0; i < node.children.length; i++){
+		  			//if the current child in the for loop has children of its own
+		  			//call recurse again on it to decend the whole tree
+		  			if (node.children[i].children){
+		  				childrenCount(node.children[i], $ctrl.count);
+		  			}
+		  		}
+		  	}
+		  	return $ctrl.count;
+		  }
+
+	  });//Ends d3 promise
+
+  }//Ends controller function
 
 })();
